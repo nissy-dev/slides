@@ -12,5 +12,8 @@
     "@slidev/theme-default": "latest",
     "@slidev/theme-seriph": "latest",
     "@slidev/types": "^0.43.13"
+  },
+  "devDependencies": {
+    "@iconify-json/uim": "^1.1.6"
   }
 }
