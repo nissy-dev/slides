@@ -23,7 +23,7 @@ transition: 'view-transition'
 <Transform :scale="1.4">
 
 - Daiki Nishikawa (nissy)
-- Frontend engineer at Cybozu Inc.
+- Frontend engineer at Cybozu, Inc.
 - I like coding rust 🦀 (also like eating 🦀)
 - Core contributor of Biome
 
@@ -51,6 +51,12 @@ transition: 'view-transition'
 
 <img src="/biome_logo.png" />
 
+<!--
+
+新しいロゴに差し替えられそうなら差し替える
+
+-->
+
 ---
 
 # What is Biome?
@@ -74,9 +80,9 @@ transition: 'view-transition'
 
 <Transform :scale="1.4">
 
-- <logos-intellij-idea /> Release Intellij plugin
+- <logos-intellij-idea /> Release [Intellij plugin](https://plugins.jetbrains.com/plugin/22761-biome)
 - 🆕 Add new 15 lint rules
-- 🏛 Establish project governance
+- 🏛 Establish [project governance](https://github.com/biomejs/biome/blob/main/GOVERNANCE.md)
 - 🚀 Start working CSS parser
 
 </Transform>
@@ -96,10 +102,10 @@ transition: 'view-transition'
 # Governance
 
 - Welcome to more contributors
-  - Join three new maintainers
+  - [Join three new maintainers](https://github.com/biomejs/biome/blob/main/CONTRIBUTING.md#current-members)
 - Collect funds from community
-  - Open Collective
-  - GitHub Sponsor
+  - [Open Collective](https://opencollective.com/biome)
+  - [GitHub Sponsor](https://github.com/sponsors/biomejs)
 - Start thinking about roadmap
 
 ---
@@ -110,7 +116,7 @@ transition: 'view-transition'
 
 # CSS Support
 
-- Working CSS parser
+- [Working CSS parser](https://github.com/biomejs/biome/issues/268)
 - Formatter and linter will come next year
 
 ---
@@ -142,9 +148,9 @@ transition: 'view-transition'
 
 # A. Vercel
 
-- Ant Design
-- Unleash
-- Tamagui
+- [Ant Design](https://github.com/ant-design/ant-design)
+- [Unleash](https://github.com/Unleash/unleash)
+- [Tamagui](https://github.com/tamagui/tamagui)
 - ... and you?
 
 <!--
@@ -185,7 +191,7 @@ transition: 'view-transition'
   </video>
 </div>
 
-Cited by [https://rome.tools/blog/2021/09/21/rome-will-be-rewritten-in-rust/](https://web.archive.org/web/20230328125908/https://rome.tools/blog/2022/11/08/rome-10/)
+Cited by [Announcing Rome v10](https://web.archive.org/web/20230328125908/https://rome.tools/blog/2022/11/08/rome-10/)
 
 ---
 layout: section
@@ -193,9 +199,9 @@ title: Let's look into the internals of parser!
 transition: 'view-transition'
 ---
 
-<div class="flex flex-col gap-2xl font-bold">
+<div class="flex flex-col font-bold">
+  <div class="text-4xl mb-2xl">Let's look into the internals of parser!</div>
   <div class="text-gray text-xl">From the viewpoint of error resilience</div>
-  <div class="text-4xl">Let's look into the internals of parser!</div>
 </div>
 
 ---
@@ -270,7 +276,7 @@ transition: 'view-transition'
 <div class="mt-2xl">
 
 - Traverse Red Tree and cast to AST
-- AST is defined by DSL
+- [AST is defined by DSL](https://github.com/biomejs/biome/blob/main/xtask/codegen/js.ungram)
   - incompatible with estree
 - Bognus node
   - A custom node for broken syntax
@@ -326,35 +332,125 @@ transition: 'view-transition'
 
 ---
 layout: section
-title: Let's look into the internals of parser!
+title: Our parser is based on Red-Green Tree!
 transition: 'view-transition'
 ---
 
-<div class="flex flex-col gap-2xl font-bold">
-  <div class="text-4xl">Our parser is based on Red-Green Tree!</div>
+<div class="flex flex-col font-bold">
+  <div class="text-4xl mb-2xl">Our parser is based on Red-Green Tree!</div>
   <div class="text-xl text-gray">This is why everything is from scratch</div>
   <div class="text-xl text-gray">Existing AST-based parser tools can't be used</div>
 </div>
 
 ---
 layout: section
+title: Next, let's look into our linter code!
 transition: 'view-transition'
 ---
 
-# How about linter?
-
-## Let's look into our liner code!
+<div class="flex flex-col font-bold">
+  <div class="text-4xl mb-2xl">Next, let's look into our linter code!</div>
+  <div class="text-xl text-gray">According to the difference of our parser</div>
+  <div class="text-l text-gray">our linter is also different...?</div>
+</div>
 
 ---
-layout: section
 transition: 'view-transition'
 ---
 
-# TODO
+# Example: enforce-foo-bar
 
+- All const variables named "foo" are assigned the string literal "bar"
+- This is covered in [ESLint's custom rule tutorial](https://eslint.org/docs/latest/extend/custom-rule-tutorial)
+
+<div class="mt-2xl">
+
+```js
+// show error!
+const foo = "foo123";
+↓ 
+// expected
+const foo = "bar";
+```
+
+</div>
+
+---
+transition: 'view-transition'
+---
+
+# ESLint implementation
+
+```js
+create(context) {
+  return {
+    // Performs action in the function on every variable declarator
+    VariableDeclarator(node) {
+      // Check if a `const` variable declaration
+      if (node.parent.kind === "const") {
+        // Check if variable name is `foo`
+        if (node.id.type === "Identifier" && node.id.name === "foo") {
+          // Check if value of variable is "bar"
+          if (node.init && node.init.type === "Literal" && node.init.value !== "bar") {
+            // report error
+            context.report({ ... });
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+---
+transition: 'view-transition'
+
+# Biome implementation
+---
+
+```rust
+impl Rule for EnforceFooBar {
+    // define 
+    type Query = Ast<JsVariableDeclarator>;
+
+    type State = ();
+    type Signals = Option<Self::State>;
+    type Options = ();
+
+    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+        let node = ctx.query();
+        let parent = node
+            .parent::<JsVariableDeclaratorList>()?
+            .parent::<JsVariableDeclaration>()?;
+
+        // check if a `const` variable declaration
+        if parent.is_const() {
+            // Check if value of variable is "bar"
+            if node.id().ok()?.text() == "foo" {
+                // Check if value of variable is "bar"
+                let init_exp = node.initializer()?.expression().ok()?;
+                let literal_exp = init_exp.as_any_js_literal_expression()?;
+                if literal_exp.as_static_value()?.text() != "bar" {
+                    // Report diagnostic to Biome
+                    // The details of diagnostic is implemented by "diagnostic" method
+                    return Some(());
+                }
+            }
+        }
+        None
+    }
+}
+```
 
 ---
 transition: 'view-transition'
 ---
 
 # References
+
+- [biomejs.dev](https://biomejs.dev/)
+- [Announcing Biome](https://biomejs.dev/blog/annoucing-biome)
+- [Rowan](https://github.com/rust-analyzer/rowan)
+- [Syntax in rust-analyzer](https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/syntax.md)
+- [Rome will be written in Rust 🦀](https://web.archive.org/web/20230401084626/https://rome.tools/blog/2021/09/21/rome-will-be-rewritten-in-rust/)
+- [Rust Dublin October 2023 - Biome](https://www.youtube.com/watch?v=stxiUYmHn0s)
