@@ -95,7 +95,7 @@ Web Storm 使っている人がどれくらいいるのか聞いても良さそ�
 
 ---
 layout: image-right
-image: ./public/governance.png
+image: /governance.png
 transition: 'view-transition'
 ---
 
@@ -110,7 +110,7 @@ transition: 'view-transition'
 
 ---
 layout: image-right
-image: ./public/css_support.png
+image: /css_support.png
 transition: 'view-transition'
 ---
 
@@ -142,7 +142,7 @@ transition: 'view-transition'
 
 ---
 layout: image-left
-image: ./public/vercel.png
+image: /vercel.png
 transition: 'view-transition'
 ---
 
@@ -186,10 +186,10 @@ transition: 'view-transition'
 # Error resilience!
 
 <div class="flex flex-col justify-center">
-  <video controls>
-    <source src="/public/eslint-rome-comparison.mp4" type="video/mp4" />
-  </video>
   <div class="text-center">Biome can lint files with syntax errors</div>
+  <video controls>
+    <source src="/eslint-rome-comparison.mp4" type="video/mp4" preload="metadata" poster="/video_poster.png"/>
+  </video>
 </div>
 
 ---
@@ -210,7 +210,7 @@ transition: 'view-transition'
 # General parser
 
 <div class="flex mt-4xl justify-center">
-  <img src="/public/general_parser.png" class="h-70" />
+  <img src="/general_parser.png" class="h-70" />
 </div>
 
 ---
@@ -223,7 +223,7 @@ transition: 'view-transition'
 - Return AST even if the syntax is invalid
 
 <div class="flex mt-xl justify-center">
-  <img src="/public/biome_parser.png" class="h-70" />
+  <img src="/biome_parser.png" class="h-70" />
 </div>
 
 ---
@@ -237,11 +237,12 @@ transition: 'view-transition'
 
 - Green Tree
   - Immutable tree
+  - Node has syntax kind and text length
   - Include all information about code
 - Red Tree
   - Mutable tree
   - Computed from Green Tree
-  - Expose APIs to manipulate trees
+  - Node has APIs to manipulate trees
 
 </div>
 
@@ -281,8 +282,6 @@ transition: 'view-transition'
 - Traverse Red Tree and cast to AST
 - [AST is defined by DSL](https://github.com/biomejs/biome/blob/main/xtask/codegen/js.ungram)
   - incompatible with estree
-- Bogus node
-  - A custom node for broken syntax
 
 </div>
 
@@ -314,12 +313,49 @@ JsVariableStatement {
 ```
 
 ---
+layout: two-cols
+transition: 'view-transition'
+---
+
+## Handling invalid syntax
+
+<div class="mt-2xl">
+
+- Allow missing fields
+- Use bogus node
+  - A custom node for invalid syntax
+
+</div>
+
+::right::
+
+Example of AST (`function}`)
+
+```text {all|6-10|12-16}
+items: JsModuleItemList [
+  JsFunctionDeclaration {
+    async_token: missing (optional),
+    function_token: FUNCTION_KW@0..8 "function" [] [],
+    star_token: missing (optional),
+    id: missing (required),
+    type_parameters: missing (optional),
+    parameters: missing (required),
+    return_type_annotation: missing (optional),
+    body: missing (required),
+  },
+  JsBogusStatement {
+    items: [
+      R_CURLY@8..9 "}" [] [],
+    ],
+  },
+],
+```
+
+---
 transition: 'view-transition'
 ---
 
 # Red-Green Tree (lossless syntax tree)
-
-<Transform :scale="1.4">
 
 - Great error resilience
 - Fully recoverable
@@ -327,8 +363,6 @@ transition: 'view-transition'
   - rust-analyzer and swift also use
 - Biome use the forked Rowan
   - Rowan: A library for red-green tree used in rust-analyzer
-
-</Transform>
 
 ---
 layout: section
@@ -404,43 +438,118 @@ create(context) {
 
 ---
 transition: 'view-transition'
-
-# Biome implementation
 ---
 
-```rust
+# Biome implementation
+
+```rust {all|2-3|6-17|all}
 impl Rule for EnforceFooBar {
-    // define 
+    // define the AST node which visitor enter
     type Query = Ast<JsVariableDeclarator>;
-
     type State = ();
-    type Signals = Option<Self::State>;
-    type Options = ();
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let node = ctx.query();
-        let parent = node
-            .parent::<JsVariableDeclaratorList>()?
-            .parent::<JsVariableDeclaration>()?;
+    // The main logic for linter
+    // - return Some(()) when to report error
+    // - return None **when not** to report error
+    fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
+      let node = ctx.query();
+      let parent = node
+          .parent::<JsVariableDeclaratorList>()?
+          .parent::<JsVariableDeclaration>()?;
 
-        // check if a `const` variable declaration
-        if parent.is_const() {
-            // Check if value of variable is "bar"
-            if node.id().ok()?.text() == "foo" {
-                // Check if value of variable is "bar"
-                let init_exp = node.initializer()?.expression().ok()?;
-                let literal_exp = init_exp.as_any_js_literal_expression()?;
-                if literal_exp.as_static_value()?.text() != "bar" {
-                    // Report diagnostic to Biome
-                    // The details of diagnostic is implemented by "diagnostic" method
-                    return Some(());
-                }
-            }
-        }
-        None
+      ...
     }
 }
 ```
+
+---
+transition: 'view-transition'
+---
+
+# Biome implementation
+
+```rust {all|3-6|7-14|all}
+fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
+    ...
+    // check if a `const` variable declaration
+    if parent.is_const() {
+        // Check if variable name is `foo`
+        if node.id().ok()?.text() == "foo" {
+            // Check if value of variable is "bar"
+            let init_exp = node.initializer()?.expression().ok()?;
+            let literal_exp = init_exp.as_any_js_literal_expression()?;
+            if literal_exp.as_static_value()?.text() != "bar" {
+                // Report error to Biome
+                // The details of error message is implemented by "diagnostic" method
+                return Some(());
+            }
+        }
+    }
+    None
+}
+```
+
+---
+transition: 'view-transition'
+---
+
+# Comparison
+
+<Transform :scale="0.8">
+
+```rust
+impl Rule for EnforceFooBar {
+    type Query = Ast<JsVariableDeclarator>;
+    type State = ();
+    
+    fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
+      let node = ctx.query();
+      let parent = node
+          .parent::<JsVariableDeclaratorList>()?
+          .parent::<JsVariableDeclaration>()?;
+
+      if parent.is_const() {
+          if node.id().ok()?.text() == "foo" {
+              let init_exp = node.initializer()?.expression().ok()?;
+              let literal_exp = init_exp.as_any_js_literal_expression()?;
+              if literal_exp.as_static_value()?.text() != "bar" {
+                  return Some(());
+              }
+          }
+      }
+      None
+    }
+}
+```
+
+</Transform>
+
+<img src="/eslint_impl.png" class="absolute top-3xl right-xl w-2/5" />
+
+<logos-javascript class="absolute top-46 right-5 w-10 h-10" />
+
+<logos-rust class="absolute bottom-8 right-50 w-10 h-10 fill-[#B7410E]" />
+
+---
+transition: 'view-transition'
+layout: section
+---
+
+<div class="flex flex-col font-bold">
+  <div class="text-4xl mb-2xl">The code is similar than I expected</div>
+  <div class="text-xl text-gray">It is not necessary to know Rust and Biome in depth from the beginning</div>
+</div>
+
+---
+transition: 'view-transition'
+layout: section
+---
+
+<div class="flex flex-col font-bold">
+  <div class="text-4xl mb-2xl">Did you feel more familiar with Biome?</div>
+  <div class="text-xl text-gray">Welcome to your contribution!</div>
+  <div class="text-xl text-gray">Learning new languages is fun!</div>
+</div>
 
 ---
 transition: 'view-transition'

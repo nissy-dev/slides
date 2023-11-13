@@ -5,7 +5,7 @@
   "scripts": {
     "build": "slidev build",
     "dev": "slidev --open",
-    "export": "slidev export"
+    "export": "slidev export --dark --with-clicks"
   },
   "dependencies": {
     "@slidev/cli": "^0.43.13",
@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@iconify-json/logos": "^1.1.37",
-    "@iconify-json/uim": "^1.1.6"
+    "@iconify-json/uim": "^1.1.6",
+    "playwright-chromium": "^1.39.0"
   }
 }
