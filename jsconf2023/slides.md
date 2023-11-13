@@ -4,7 +4,7 @@ fonts:
   # basically the text
   sans: 'M PLUS'
   # for code blocks, inline code, etc.
-  mono: 'Fira Code'
+  mono: 'Monaco'
 title: Deep dive into Biome
 canvasWidth: 800
 highlighter: 'shiki'
@@ -189,9 +189,8 @@ transition: 'view-transition'
   <video controls>
     <source src="/public/eslint-rome-comparison.mp4" type="video/mp4" />
   </video>
+  <div class="text-center">Biome can lint files with syntax errors</div>
 </div>
-
-Cited by [Announcing Rome v10](https://web.archive.org/web/20230328125908/https://rome.tools/blog/2022/11/08/rome-10/)
 
 ---
 layout: section
@@ -248,22 +247,26 @@ transition: 'view-transition'
 
 ::right::
 
-Example of Green Tree (`const = 1;`)
+Example of Green Tree (`const a = 1;`)
 
-```text
-0: JS_VARIABLE_DECLARATION@0..11
-  0: (empty)
-  1: CONST_KW@0..6 "const" [] [Whitespace(" ")]
-  2: JS_VARIABLE_DECLARATOR_LIST@6..11
-    0: JS_VARIABLE_DECLARATOR@6..11
-      0: JS_IDENTIFIER_BINDING@6..8
-        0: IDENT@6..8 "a" [] [Whitespace(" ")]
-      1: (empty)
-      2: JS_INITIALIZER_CLAUSE@8..11
-        0: EQ@8..10 "=" [] [Whitespace(" ")]
-        1: JS_NUMBER_LITERAL_EXPRESSION@10..11
-          0: JS_NUMBER_LITERAL@10..11 "1" [] []
-1: SEMICOLON@11..12 ";" [] []
+```plaintext
+1: JS_DIRECTIVE_LIST@0..0
+2: JS_MODULE_ITEM_LIST@0..12
+  0: JS_VARIABLE_STATEMENT@0..12
+    0: JS_VARIABLE_DECLARATION@0..11
+      0: (empty)
+      1: CONST_KW@0..6 "const" [] [Whitespace(" ")]
+      2: JS_VARIABLE_DECLARATOR_LIST@6..11
+        0: JS_VARIABLE_DECLARATOR@6..11
+          0: JS_IDENTIFIER_BINDING@6..8
+            0: IDENT@6..8 "a" [] [Whitespace(" ")]
+          1: (empty)
+          2: JS_INITIALIZER_CLAUSE@8..11
+            0: EQ@8..10 "=" [] [Whitespace(" ")]
+            1: JS_NUMBER_LITERAL_EXPRESSION@10..11
+              0: JS_NUMBER_LITERAL@10..11 "1" [] []
+    1: SEMICOLON@11..12 ";" [] []
+3: EOF@12..12 "" [] []
 ```
 
 ---
@@ -278,12 +281,14 @@ transition: 'view-transition'
 - Traverse Red Tree and cast to AST
 - [AST is defined by DSL](https://github.com/biomejs/biome/blob/main/xtask/codegen/js.ungram)
   - incompatible with estree
-- Bognus node
+- Bogus node
   - A custom node for broken syntax
 
 </div>
 
 ::right::
+
+Example of AST (`const a = 1;`)
 
 ```text
 JsVariableStatement {
@@ -303,14 +308,9 @@ JsVariableStatement {
           },
         },
       },
-    ],
-  },
-},
-JsBogusStatement {
-  items: [
-    QUESTION@10..11 "?" [] [],
-  ],
-},
+    ]
+  }
+}
 ```
 
 ---
@@ -450,6 +450,7 @@ transition: 'view-transition'
 
 - [biomejs.dev](https://biomejs.dev/)
 - [Announcing Biome](https://biomejs.dev/blog/annoucing-biome)
+- [Announcing Rome v10](https://web.archive.org/web/20230328125908/https://rome.tools/blog/2022/11/08/rome-10/)
 - [Rowan](https://github.com/rust-analyzer/rowan)
 - [Syntax in rust-analyzer](https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/syntax.md)
 - [Rome will be written in Rust 🦀](https://web.archive.org/web/20230401084626/https://rome.tools/blog/2021/09/21/rome-will-be-rewritten-in-rust/)
