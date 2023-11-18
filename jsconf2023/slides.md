@@ -22,12 +22,23 @@ transition: 'view-transition'
 
 <Transform :scale="1.4">
 
-- Daiki Nishikawa (nissy)
+- Daiki Nishikawa (GitHub: @nissy-dev X: @nissy_dev)
 - Frontend engineer at Cybozu, Inc.
+  - Replace frontend using Next.js App Router
 - I like coding rust 🦀 (also like eating 🦀)
 - Core contributor of Biome
 
 </Transform>
+
+<!--
+
+実は同じチームの麦島が、午後に Next.js の App Router に関する発表をするので、
+もし気になる人はみてもらえたらと思います。
+
+フロントエンドエンジニアのかたわら、TyeScript から型に興味を持ち、
+最近は Rust を書くことが好きです。そして、今日取り上げる Biome のコアコントリビュータをしています。
+
+-->
 
 ---
 transition: 'view-transition'
@@ -49,11 +60,15 @@ title: Biome logo
 transition: 'view-transition'
 ---
 
-<img src="/biome_logo.png" />
+<img src="/biome_logo_slogan.png" />
 
 <!--
 
-新しいロゴに差し替えられそうなら差し替える
+とういうことで最近の Biome の紹介からまずは始めてこうと思います！
+ちなみに、これ今後 biome で使っていくことにした、新しいロゴになります。
+
+まだ、そのうち公式な発表を出す予定なのですが、
+せっかくの JSConf ということでちょっと先出ししてみました。
 
 -->
 
@@ -63,12 +78,12 @@ transition: 'view-transition'
 
 <Transform :scale="1.4">
 
-- Biome is the fork of Rome by community
-  - The members of Rome are laid off
-  - Rome isn't maintained anymore
 - Provide toolchains for web development
   - Currently, focus on linter and formatter
   - Language support: JS, TS, JSON and JSONC
+- Biome is the fork of Rome by community
+  - The members of Rome are laid off
+  - Rome isn't maintained anymore
 
 </Transform>
 
@@ -89,7 +104,15 @@ transition: 'view-transition'
 
 <!--
 
-Web Storm 使っている人がどれくらいいるのか聞いても良さそう
+1つ目は intellij plugin のリリースです。
+多くの要望が来ていてなかなかコアちーむが着手できていなかったのですが、
+新しいコントリビューターがかなり実装してくれたことでリリースできました。
+
+
+２つ目は lint ルールの追加です。
+引き続き 15個の新しい lint ルールを実装して、linter の安定化に努めています。
+
+３つ目と４つ目は次のスライドで説明していきます。
 
 -->
 
@@ -108,6 +131,15 @@ transition: 'view-transition'
   - [GitHub Sponsor](https://github.com/sponsors/biomejs)
 - Start thinking about roadmap
 
+<!--
+
+大きく２つの目的があった
+
+- コントリビュータを増やす
+- プロジェクトとして寄付を募集しやすくする
+
+-->
+
 ---
 layout: image-right
 image: /css_support.png
@@ -118,6 +150,13 @@ transition: 'view-transition'
 
 - [Working CSS parser](https://github.com/biomejs/biome/issues/268)
 - Formatter and linter will come next year
+
+<!--
+
+10月くらいから始めていて、今は at-rule 以外の基本的なパーサーの実装を進めている。
+このまま進めていくと、年内は parser の実装をしていて、来年以降に formatter や linter の実装が始めると思います。
+
+-->
 
 ---
 layout: section
@@ -132,11 +171,14 @@ title: npm trends
 transition: 'view-transition'
 ---
 
-<img src="/npm_trend.png" />
+<img src="/npm_trends.png" />
 
 <!--
 
-画像は差し替える
+まずは、npm の weekly ダウンロードの数字を紹介させてもらうと、
+weekly で 6万ダウンロードを超えたくらいとなっています。
+
+もともと rome の頃は、Astro と同じくらい使われていました。
 
 -->
 
@@ -155,7 +197,20 @@ transition: 'view-transition'
 
 <!--
 
-この会場でも使っている人を聞いてみる
+v0: ユーザーが入力したテキストに基づいてWebページのUIを自動生成してくれるサービスです
+
+Ant design: Alibabaが開発したReact の UI ライブラリ
+
+Unleash: フィーチャーフラグを管理するための機能を提供しているプロジェクト
+
+Tamagui: React と React Native の両方に対応したUIライブラリ
+
+スライドに書かれていないところだと、つい最近では
+
+- Node.js に biome を formatter として利用する PR 
+- つい一昨日、時雨堂さんも biome を使ってくれて、スポンサーにもなってくれました
+
+会場にいるみなさんの中で、使っているよーという方いますか？
 
 -->
 
@@ -165,6 +220,16 @@ transition: 'view-transition'
 ---
 
 # Why use Biome?
+
+<!--
+
+先ほどのアンケートの通り、多くの人は既存の prettier / eslint などを使っていて、
+ある程度は満足しているのかなと思います。
+
+じゃあ、なんで先ほど紹介したプロジェクトは Biome を使っているのかというところなのですが、
+Biome の特徴についてみていきます。
+
+-->
 
 ---
 
@@ -179,6 +244,18 @@ transition: 'view-transition'
 
 </Transform>
 
+
+<!--
+
+速さ = TypeScript のようなリポジトリでも数百msでフォーマットできます。
+
+２つ目と３つ目は、特に JS あんまり普段触らないなーという人にとっては嬉しいポイントなのかなと思います。
+
+これらのポイントがよく biome については取り上げられると思うのですが、
+今日もう１つ紹介したいポイントがあります。
+
+-->
+
 ---
 transition: 'view-transition'
 ---
@@ -186,11 +263,17 @@ transition: 'view-transition'
 # Error resilience!
 
 <div class="flex flex-col justify-center">
-  <div class="text-center">Biome can lint files with syntax errors</div>
   <video controls>
     <source src="/eslint-rome-comparison.mp4" type="video/mp4" preload="metadata" poster="/video_poster.png"/>
   </video>
+  <div class="text-center">Biome can lint files with syntax errors</div>
 </div>
+
+<!--
+
+error resilience は、構文エラーがあっても、パース処理をできる限り止めないで構文解析を続けられる特徴になります。
+
+-->
 
 ---
 layout: section
@@ -203,6 +286,12 @@ transition: 'view-transition'
   <div class="text-gray text-xl">From the viewpoint of error resilience</div>
 </div>
 
+<!--
+
+とういうことで、今日のはこの違いに着目しながら、Biome のパーサーの処理についてみていこうと思います。
+
+-->
+
 ---
 transition: 'view-transition'
 ---
@@ -212,6 +301,15 @@ transition: 'view-transition'
 <div class="flex mt-4xl justify-center">
   <img src="/general_parser.png" class="h-70" />
 </div>
+
+
+<!--
+
+invalid な構文の場合、パーサーは途中で構文エラーを報告し、AST を構築しないことがある。
+AST 構築されないと、先ほどの動画のように lint のエラーなどは報告できない。
+
+-->
+
 
 ---
 transition: 'view-transition'
@@ -225,6 +323,18 @@ transition: 'view-transition'
 <div class="flex mt-xl justify-center">
   <img src="/biome_parser.png" class="h-70" />
 </div>
+
+
+<!--
+
+２つの特徴がある
+
+- 直接的に AST を構築せず、GreenTree/RedTree と呼ばれる構文木を生成する
+- ASTは RedTree から生成されますが、このとき invalid な文法に対しても必ず AST を返すようにします
+
+ということで、それぞれについて詳しくみていきます。
+
+-->
 
 ---
 layout: two-cols
@@ -270,6 +380,15 @@ Example of Green Tree (`const a = 1;`)
 3: EOF@12..12 "" [] []
 ```
 
+
+<!--
+
+- Green Tree は初めに生成される構文木
+- スペースやコメントなども含む具象構文木
+- これを直接編集できない
+
+-->
+
 ---
 layout: two-cols
 transition: 'view-transition'
@@ -312,6 +431,13 @@ JsVariableStatement {
 }
 ```
 
+<!--
+
+- Red Tree を走査して、syntax kind の情報をもとに AST を作成しています。
+- Biome の AST は DSL で定義しており、estree とは互換のないものになっています。
+
+-->
+
 ---
 layout: two-cols
 transition: 'view-transition'
@@ -351,6 +477,13 @@ items: JsModuleItemList [
 ],
 ```
 
+<!--
+
+- AST にキャストする際に、Biome は次のように
+- Biome の AST は DSL で定義しており、estree とは互換のないものになっています。
+
+-->
+
 ---
 transition: 'view-transition'
 ---
@@ -363,6 +496,15 @@ transition: 'view-transition'
   - rust-analyzer and swift also use
 - Biome use the forked Rowan
   - Rowan: A library for red-green tree used in rust-analyzer
+
+<!--
+
+Fully recoverable: 構文木からもとのソースコードを完全に復元できる特徴があります。
+
+ASTベースだと、コメントやスペースなどの情報を省くため、一般的に元のコードを再現するのは難しいです。
+
+-->
+
 
 ---
 layout: section
