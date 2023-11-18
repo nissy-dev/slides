@@ -168,18 +168,21 @@ transition: 'view-transition'
 ---
 layout: center
 title: npm trends
-transition: 'view-transition'
+transition: view-transition
 ---
 
 <img src="/npm_trends.png" />
 
 <!--
+まずは、npm の weekly ダウンロードの数字を紹介します。
 
-まずは、npm の weekly ダウンロードの数字を紹介させてもらうと、
+青色が biome 
+緑色が rome
+オレンジが astro 
+
 weekly で 6万ダウンロードを超えたくらいとなっています。
 
 もともと rome の頃は、Astro と同じくらい使われていました。
-
 -->
 
 ---
@@ -312,7 +315,7 @@ AST 構築されないと、先ほどの動画のように lint のエラーな�
 
 
 ---
-transition: 'view-transition'
+transition: view-transition
 ---
 
 # Biome parser
@@ -324,16 +327,14 @@ transition: 'view-transition'
   <img src="/biome_parser.png" class="h-70" />
 </div>
 
-
 <!--
-
 ２つの特徴がある
 
 - 直接的に AST を構築せず、GreenTree/RedTree と呼ばれる構文木を生成する
-- ASTは RedTree から生成されますが、このとき invalid な文法に対しても必ず AST を返すようにします
+- Red Tree をもとに AST は生成する
+- このとき invalid な文法に対しても必ず AST を返すようにします
 
 ということで、それぞれについて詳しくみていきます。
-
 -->
 
 ---
@@ -440,7 +441,7 @@ JsVariableStatement {
 
 ---
 layout: two-cols
-transition: 'view-transition'
+transition: view-transition
 ---
 
 ## Handling invalid syntax
@@ -478,10 +479,7 @@ items: JsModuleItemList [
 ```
 
 <!--
-
-- AST にキャストする際に、Biome は次のように
-- Biome の AST は DSL で定義しており、estree とは互換のないものになっています。
-
+Biome は ASTを生成する際に、 invalid な文法を考慮しているのが特徴です。どう考慮しているのかというと、、、
 -->
 
 ---
@@ -509,7 +507,7 @@ ASTベースだと、コメントやスペースなどの情報を省くため�
 ---
 layout: section
 title: Our parser is based on Red-Green Tree!
-transition: 'view-transition'
+transition: view-transition
 ---
 
 <div class="flex flex-col font-bold">
@@ -517,6 +515,10 @@ transition: 'view-transition'
   <div class="text-xl text-gray">This is why everything is from scratch</div>
   <div class="text-xl text-gray">Existing AST-based parser tools can't be used</div>
 </div>
+
+<!--
+これが、Biomeがフルスクラッチでパーサーを実装している理由です。既存の例えば ligthing css や swcのようなパーサーを使いたくても使えないという状況です。
+-->
 
 ---
 layout: section
