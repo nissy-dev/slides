@@ -22,8 +22,11 @@ transition: 'view-transition'
 </div>
 
 <!--
-挨拶。今日は10分で「OpenTelemetry のいま」を、特にフロントエンドの動きにしぼって話します。
-準備は真剣に、本番は気楽に。
+こんにちは。今日は OpenTelemetry の話をします。
+ただしサーバーサイドではなく、ブラウザ・フロントエンド側に絞ります。
+
+OpenTelemetry はすでにバックエンドではよく使われていますが、最近はブラウザ向け SDK の開発も動き出しています。
+今日はその背景と、いまどこまで進んでいるのかを10分で紹介します。
 -->
 
 ---
@@ -53,7 +56,11 @@ transition: 'view-transition'
 </div>
 
 <!--
-自己紹介は短く。なぜ自分がこの話をするのか＝この分野を追ってきた、という信頼づけだけしておく。
+簡単に自己紹介します。
+Daiki Nishikawa といいます。GitHub と X は nissy-dev / nissy_dev です。
+
+Cybozu でソフトウェアエンジニアをしていて、フロントエンドの横断的な技術支援や、AI を使った脆弱性検出基盤の整備をしています。
+普段からフロントエンドの監視や品質改善に関わることが多く、その流れで OpenTelemetry Browser の動きを追っています。
 -->
 
 ---
@@ -71,9 +78,12 @@ transition: 'view-transition'
 </div>
 
 <!--
-まず、今日の発表で覚えてほしいことを先にまとめさせてもらうと、次のようになるかなと思います。
+先に、この発表で一番伝えたいことを置いておきます。
 
-では、発表の本題を初めていきますね。
+OpenTelemetry は、もうサーバーサイドだけの話ではありません。
+フロントエンド向けの仕様や SDK の実装も進んでいます。
+
+まだ課題はありますが、将来的にはフロントエンドでもベンダー非依存で監視を実装できる選択肢が現実味を帯びてきています。
 -->
 
 ---
@@ -95,7 +105,12 @@ transition: 'view-transition'
 [^1]: https://opentelemetry.io/ja/blog/2026/otel-graduates/
 
 <!--
-まず OpneTelemetry を聞いたことない人もいるかもしれないので、OpneTelemetry とはなんぞやというところを説明します。
+まず OpenTelemetry について、簡単に前提を揃えます。
+
+OpenTelemetry は、トレース・メトリクス・ログといったテレメトリを扱うための共通仕様です。
+特定の監視ベンダーの SDK や形式に強く依存しすぎないようにする、というのが大きな価値です。
+
+今年5月には CNCF の Graduated Projects にもなっていて、クラウドネイティブの世界ではかなり重要な位置づけになっています。
 -->
 
 ---
@@ -119,8 +134,13 @@ transition: 'view-transition'
 </div>
 
 <!--
-2つ続けて挙手してもらう。会場でこの「差」を体感させるのが狙い。
-この差が、次の「なぜ？」につながる。
+ここで少し会場に聞いてみます。
+
+まず、サーバーサイドで OpenTelemetry を使っている、または触ったことがある人はいますか？
+次に、フロントエンドで使っている人はいますか？
+
+おそらくサーバーサイドの方が多くて、フロントエンドはまだ少ないと思います。
+この差が、今日話したいポイントです。
 -->
 
 ---
@@ -132,7 +152,7 @@ transition: 'view-transition'
 <div class="text-2xl mt-4">
 
 - <logos-sentry /> や <logos-datadog /> などの SaaS の SDK の利用が主流
-- フロントエンドの監視まで手に回ってないチームも多そう
+- フロントエンドの監視まで手が回ってないチームも多そう
 - OpenTelemetry で "安定して" できるのはトレースの送信だけ
   - `@opentelemetry/sdk-trace-web` を利用して実装できる
 
@@ -140,8 +160,11 @@ transition: 'view-transition'
 </div>
 
 <!--
-ロゴを出しつつ、「すでに便利な選択肢がある」ことが普及していない理由、と説明する。
-ロゴ素材は public/ に差し替え可能。
+フロントエンドの監視は、現状だと Sentry や Datadog のような SaaS の SDK を入れるケースが多いと思います。
+これらは便利で、エラー監視や Session Replay なども含めて一通り揃っています。
+
+一方で、OpenTelemetry で安定してできることはまだ限定的です。
+たとえばトレースの送信は `@opentelemetry/sdk-trace-web` でできますが、フロントエンド監視全体を任せられる状態ではありません。
 -->
 
 ---
@@ -163,8 +186,12 @@ transition: 'view-transition'
 [^2]: https://docs.google.com/document/d/16Vsdh-DM72AfMg_FIt9yT9ExEWF4A_vRbQ3jRNBe09w/edit?tab=t.0#heading=h.n5vcc992gs6y
 
 <!--
-自分も気になって調べたら、2021年ごろから Client side の実装が議論されていた、という発見を共有する。
-過去の議論ドキュメントが残っている（PLAN.md のリンク参照）。
+では OpenTelemetry 側でフロントエンドの話が最近急に出てきたのかというと、そうではありません。
+
+Client SDK and Instrumentation SIG、つまりクライアント向け SDK と計測まわりのグループとして、2021年ごろから議論はありました。
+
+ただし対象はブラウザだけではなく、Android や iOS も含んでいました。
+そのため共通設計の対象が広く、ブラウザ固有の話を進めるには時間がかかっていたようです。
 -->
 
 ---
@@ -184,8 +211,13 @@ transition: 'view-transition'
 </div>
 
 <!--
-ここが今日の山場。
-モチベーションの高いブラウザが独立したことで、開発が一気に前に進み始めた。
+ここが今回の発表で一番大事な変化です。
+
+昨年中頃から、ブラウザに関しては独立した SDK として開発を進める流れになりました。
+ブラウザ固有の意思決定を早くし、開発を進めやすくするためです。
+
+Grafana Labs や Elastic などのメンバーも参加していて、今年に入ってから実装もかなり活発になっています。
+興味がある人は `open-telemetry/opentelemetry-browser` を見るのが早いです。
 -->
 ---
 transition: 'view-transition'
@@ -205,9 +237,12 @@ transition: 'view-transition'
 </div>
 
 <!--
-現在地を共有。各 instrumentation の実装状況は repo を見るのが早い。
-既存ツールは opentelemetry-js / opentelemetry-js-contrib に散在していたが、こちらに移して集中管理する方針、と口頭で補足。
-スクショを public/ に置いて差し替えると、より伝わる。
+現在地としては、基本的なテレメトリ収集ツールはすでに実装されています。
+
+ユーザー操作、Core Web Vitals、エラーなどを集めるためのものが、`@opentelemetry/browser-instrumentation` として使えるようになっています。
+
+また、これまで opentelemetry-js や opentelemetry-js-contrib 側にあったブラウザ向けのツールも、今後はこちらのリポジトリに集約される予定です。
+fetch、xml-http-request、document-load などがその対象です。
 -->
 ---
 transition: 'view-transition'
@@ -227,9 +262,15 @@ transition: 'view-transition'
 </div>
 
 <!--
-エラーのスタックトレースの復元（symbolication）も unknown な論点として共有する。
-Collector も送信先も現状は担わないため、どこで解決するかが未定。
-この後、もう一つの論点 Session Replay に入る。まず実物を見せる。
+ここからは、実用に向けて自分が気になっている点を2つ紹介します。
+
+1つ目は、minify されたエラーのスタックトレースを誰が復元するのか、という点です。
+フロントエンドでは本番コードが minify されるので、そのままではスタックトレースが読みづらくなります。
+
+SaaS ではソースマップをアップロードして、元のコードに対応づけるところまでやってくれることが多いです。
+一方で OpenTelemetry の世界では、Collector が標準でやってくれるわけではなく、Loki などバックエンド側の対応にもばらつきがあります。
+
+この責務をどこで持つのかは、まだ整理が必要そうです。
 -->
 
 ---
@@ -245,8 +286,13 @@ transition: 'view-transition'
 </div>
 
 <!--
-Session Replay を知らない人向けに、まず実物を見せる。
-ユーザー操作を録画のように再現できる機能。次のスライドで、これをベンダー非依存でどう共通化するかが論点、と繋げる。
+2つ目は Session Replay です。
+
+Session Replay を知らない人もいると思うので、まず実物を見せます。
+ユーザーがどこをクリックしたか、どんな画面遷移をしたかを、録画のように再現できる機能です。
+
+エラーが起きた瞬間の前後の操作を見られるので、フロントエンドの調査ではかなり強力です。
+ただし、これを OpenTelemetry の共通仕様としてどう扱うかはまだ難しい論点です。
 -->
 
 ---
@@ -258,7 +304,7 @@ transition: 'view-transition'
 <div class="flex flex-1 flex-col text-2xl mt-4">
 
 - Session Replay はどう共通仕様としてまとめるのか？
-  - rrweb [^3]をベースに各社作っていると思うが、それぞれのデータの見せ方に合わせてカスタマイズはされていそう
+  - rrweb [^3]をベースに各ベンダーは作っていると思うが、それぞれの要件に合わせてカスタマイズはされていそう
   - issue は作成されているが、特にレスポンスはない[^4]
 
 </div>
@@ -268,9 +314,13 @@ transition: 'view-transition'
 [^4]: https://github.com/open-telemetry/opentelemetry-browser/issues/32
 
 <!--
-正直に、まだ unknown な部分も共有する。
-Session Replay: どう実現するかは不明瞭。ここは今後の見どころ。
-次のスライドで Session Replay の実例（Datadog）を見せる。
+前のスライドで見せたような Session Replay を、OpenTelemetry としてどう共通仕様にするのかはまだ不明瞭です。
+
+実装としては rrweb をベースにしているベンダーが多いと思います。
+ただ、各社の UI やデータの見せ方に合わせて、かなりカスタマイズされているはずです。
+
+OpenTelemetry Browser のリポジトリにも issue はありますが、今のところ大きな議論は進んでいないようです。
+ここは今後の見どころだと思っています。
 -->
 
 ---
@@ -294,6 +344,13 @@ transition: 'view-transition'
 
 
 <!--
-最後にコアメッセージを再提示。
-締めは気楽に。「フロントの動向、面白くなってきたので追ってみてください」で終える。
+まとめです。
+
+OpenTelemetry は、サーバーサイドだけではなくフロントエンドにも広がりつつあります。
+ブラウザ向け SDK が独立して動き始め、実装も進んでいます。
+
+一方で、エラーの復元や Session Replay のように、実用に向けてまだ整理が必要な領域もあります。
+
+フロントエンドの監視をベンダー非依存で考える選択肢として、OpenTelemetry Browser はこれから面白くなっていくと思います。
+気になったらぜひリポジトリを覗いてみてください。
 -->
