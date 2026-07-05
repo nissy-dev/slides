@@ -1,0 +1,29 @@
+.slidev-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ネストした箇条書きは一段ごとにフォントを少し小さく */
+.slidev-layout ul ul {
+  font-size: 0.85em;
+}
+
+.footnotes-sep {
+  display: none;
+}
+
+.footnotes {
+  position: absolute;
+  left: 3.5rem;
+  right: 3.5rem;
+  bottom: 1rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid;
+  font-size: 0.6rem;
+  opacity: 0.6;
+}
+
+.footnote-item > p {
+  margin: 0rem;
+}

@@ -1,0 +1,21 @@
+{
+  "name": "nihonbashijs11",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "slidev build",
+    "dev": "slidev --open",
+    "export": "slidev export --dark --with-clicks"
+  },
+  "dependencies": {
+    "@slidev/cli": "52.16.0",
+    "@slidev/theme-default": "0.25.0",
+    "@slidev/theme-seriph": "0.25.0",
+    "@slidev/types": "52.16.0"
+  },
+  "devDependencies": {
+    "@iconify-json/logos": "1.2.11",
+    "@iconify-json/uim": "1.2.3",
+    "playwright-chromium": "1.61.1"
+  }
+}
