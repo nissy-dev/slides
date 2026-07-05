@@ -9,6 +9,16 @@
   font-size: 0.85em;
 }
 
+/* 箇条書きは全体的に文字を少し小さく・行間を広めに */
+.slidev-layout ul {
+  font-size: 0.9em;
+}
+
+.slidev-layout li {
+  line-height: 1.7;
+  margin-block: 0.5em;
+}
+
 .footnotes-sep {
   display: none;
 }

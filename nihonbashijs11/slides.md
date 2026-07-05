@@ -64,7 +64,7 @@ transition: 'view-transition'
 
 <div class="text-2xl mt-4">
 
-- OpenTelemetry は、もう "サーバーサイド" だけの話ではありません！
+- OpenTelemetry は、もう "サーバーサイド" だけの話ではありません
 - フロントエンドでの仕様の策定、SDK の実装が進んでいます
 - フロントエンドでもベンダー非依存の監視の実装が可能になる日が来るかも
 
@@ -174,7 +174,8 @@ transition: 'view-transition'
 
 <div class="flex flex-1 flex-col text-2xl mt-4">
 
-- より高速化な意思決定や開発を目指して、ブラウザに関しては昨年の中頃から独立して SDK 開発を進めることに
+- 昨年中頃から、ブラウザだけ独立して SDK 開発を進めることに
+  - より迅速な意思決定・開発を目指して
   - Grafana Labs、Elastic などに所属するメンバーが参画
 - github: open-telemetry/opentelemetry-browser
   - 今年に入ってから実装もかなり活発になっている
@@ -193,54 +194,82 @@ transition: 'view-transition'
 
 <div class="flex flex-1 flex-col text-2xl mt-4">
 
-- ユーザー操作、Core Web Vitals、エラーなどを回収するためのツールはすでに実装されている
-  - `@opentelemetry/browser-instrumentation`
-- opentelemetry-js や opentelemetry-js-contrib に実装されていたブラウザ関連のツールも、こちらのリポジトリに移行して集中管理する予定のよう
+- 基本的なテレメトリ収集ツールはすでに実装済み
+  - ユーザー操作 / Core Web Vitals / エラーなど
+  - `@opentelemetry/browser-instrumentation` として利用可能
+- 既存のブラウザ向けツールもこのリポジトリに集約予定
+  - opentelemetry-js や opentelemetry-js-contrib にあるもの
   - fetch / xml-http-request / document-load など
 
 </div>
 
 <!--
 現在地を共有。各 instrumentation の実装状況は repo を見るのが早い。
+既存ツールは opentelemetry-js / opentelemetry-js-contrib に散在していたが、こちらに移して集中管理する方針、と口頭で補足。
 スクショを public/ に置いて差し替えると、より伝わる。
 -->
-
 ---
 transition: 'view-transition'
-layout: two-cols-header
 ---
 
-# 実用に向けて気になっている点
+# 実用に向けて気になる点: エラーの復元
 
-::left::
+<div class="flex flex-1 flex-col text-2xl mt-4">
 
-<div class="text-xl mt-4 pr-4">
-
-- Session replay のようなデータの見せ方とも非常に関係のある機能をどう実現するのか
-  - issue は作成されているが、特にレスポンスはない[^3]
-
-</div>
-
-[^3]: https://github.com/open-telemetry/opentelemetry-browser/issues/32
-
-::right::
-
-<div class="h-full flex items-center">
-
-<iframe
-  class="w-full aspect-video rounded-lg shadow-lg"
-  src="https://player.vimeo.com/video/888869651"
-  frameborder="0"
-  allow="autoplay; fullscreen; picture-in-picture"
-  allowfullscreen
-></iframe>
+- minify されたエラーのスタックトレースの復元は誰の責務？
+  - source map で元コードに対応づける処理 = symbolication
+- 復元をどこで担うかが定まっていない
+  - SaaS はソースマップの保持と復元まで行なっている
+  - 一方 OpenTelemetry Collector では未対応
+  - Loki などバックエンド側の対応にもばらつきがある
 
 </div>
 
 <!--
+エラーのスタックトレースの復元（symbolication）も unknown な論点として共有する。
+Collector も送信先も現状は担わないため、どこで解決するかが未定。
+この後、もう一つの論点 Session Replay に入る。まず実物を見せる。
+-->
+
+---
+transition: 'view-transition'
+---
+
+# 実用に向けて気になる点: Session Replay
+
+<div class="flex justify-center mt-4">
+
+<video class="w-full rounded-lg shadow-lg" src="https://docs.dd-static.net/images//getting_started/session_replay/preview.mp4" autoplay loop muted playsinline controls></video>
+
+</div>
+
+<!--
+Session Replay を知らない人向けに、まず実物を見せる。
+ユーザー操作を録画のように再現できる機能。次のスライドで、これをベンダー非依存でどう共通化するかが論点、と繋げる。
+-->
+
+---
+transition: 'view-transition'
+---
+
+# 実用に向けて気になる点: Session Replay
+
+<div class="flex flex-1 flex-col text-2xl mt-4">
+
+- Session Replay はどう共通仕様としてまとめるのか？
+  - rrweb [^3]をベースに各社作っていると思うが、それぞれのデータの見せ方に合わせてカスタマイズはされていそう
+  - issue は作成されているが、特にレスポンスはない[^4]
+
+</div>
+
+[^3]: https://github.com/rrweb-io/rrweb
+
+[^4]: https://github.com/open-telemetry/opentelemetry-browser/issues/32
+
+<!--
 正直に、まだ unknown な部分も共有する。
-symbolication: collector 標準では未対応。honeycomb の collector-symbolicator が参考。
-session replay: どう実現するかは不明瞭。ここは今後の見どころ。
+Session Replay: どう実現するかは不明瞭。ここは今後の見どころ。
+次のスライドで Session Replay の実例（Datadog）を見せる。
 -->
 
 ---
@@ -248,20 +277,20 @@ layout: center
 transition: 'view-transition'
 ---
 
-
-<div class="flex flex-col text-2xl text-center">
+<div class="flex flex-col text-4xl text-center">
 
 <div class="mb-4">OpenTelemetry は</div>
 
 <div>フロントエンドに広がりつつあります</div>
 
-</div>
-
 <div class="text-lg opacity-70 mt-8">
 
-気になったら [opentelemetry-browser](https://github.com/open-telemetry/opentelemetry-browser) を覗いてみてください
+気になったら opentelemetry-browser を覗いてみてください
 
 </div>
+
+</div>
+
 
 <!--
 最後にコアメッセージを再提示。
