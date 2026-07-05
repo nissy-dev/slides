@@ -17,7 +17,7 @@ transition: 'view-transition'
 
 <div class="opacity-70 mt-4">
 
-ブラウザでの計装が動き出した 2026 年
+ブラウザ向け SDK が動き出した 2026 年
 
 </div>
 
@@ -152,7 +152,8 @@ transition: 'view-transition'
 
 <div class="flex flex-1 flex-col text-2xl mt-4">
 
-- Client SDK and Instrumentation として議論はされていた
+- Client SDK and Instrumentation SIG として議論はされていた
+  - SIG: Special Interest Group
   - 議事録[^2]を見る限り 2021年ごろから
 - ブラウザだけではなくモバイル (Android/iOS) も含む議論
   - 議論の対象範囲が広く、共通設計に2年以上の時間がかかっていた
@@ -220,7 +221,7 @@ transition: 'view-transition'
   - source map で元コードに対応づける処理 = symbolication
 - 復元をどこで担うかが定まっていない
   - SaaS はソースマップの保持と復元まで行なっている
-  - 一方 OpenTelemetry Collector では未対応
+  - OpenTelemetry Collector では標準対応されていない
   - Loki などバックエンド側の対応にもばらつきがある
 
 </div>
